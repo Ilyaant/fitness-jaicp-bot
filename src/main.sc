@@ -17,24 +17,11 @@ theme: /
 
     state: NoMatch
         event!: noMatch
-        HttpRequest: 
-            url = https://www.random.org/integers/?num=10&min=1&max=6&col=1&base=10&format=plain&rnd=new
-            method = GET
-            dataType = 
-            body = 
-            timeout = 0
-            headers = [{"name":"","value":""}]
-            vars = [{"name":"bit","value":"$httpResponse"}]
-        HttpRequest: 
-            url = https://gigachat.devices.sberbank.ru/api/v1/models
-            method = GET
-            dataType = 
-            body = 
-            okState = /NoMatch
-            errorState = /NoMatch
-            timeout = 0
-            headers = [{"name":"Accept","value":"application\/json"},{"name":"Authorization","value":"Bearer <{{$client.giga_token}}>"}]
-            vars = [{"name":"httpStatus","value":"$session.httpStatus"}]
+        script:
+            var userMessage = $request.query;
+            var assistantResponse = $gpt.createChatCompletion([{ "role": "user", "content": userMessage }]);
+            var response = assistantResponse.choices[0].message.content;
+            $reactions.answer(response);
         buttons:
             "В начало" -> /Start
 
